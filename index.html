@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="review-styles.css">
+</head>
+
+<body>
+
+    <!-- Background Elements -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="logo">ArtSpace</div>
+        <div class="nav-links">
+            <a href="#" onclick="showSection('gallery-section')">Gallery</a>
+            <span id="auth-links">
+                <a href="#" onclick="showSection('login-section')">Login</a>
+                <a href="#" onclick="showSection('register-section')" class="btn-primary">Register</a>
+            </span>
+            <span id="user-links" style="display: none;">
+                <a href="#" onclick="showSection('dashboard-section')" id="dashboard-link">Dashboard</a>
+                <a href="#" onclick="logout()">Logout</a>
+                <span id="user-name-display" class="user-badge"></span>
+            </span>
+        </div>
+    </nav>
+
+    <!-- App Container -->
+    <main class="container">
+
+        <!-- Gallery Section -->
+        <section id="gallery-section" class="active-section">
+            <div class="hero">
+                <h1>Discover Unique Artworks</h1>
+                <p>Explore a curated collection from talented artists worldwide.</p>
+            </div>
+            <div class="filters">
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="search-bar" class="search-input"
+                            placeholder="Search for art or artists..." oninput="filterGallery()">
+                    </div>
+                </div>
+            </div>
+            <div id="gallery-grid" class="gallery-grid">
+                <!-- Artworks injected here -->
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login-section" class="auth-section" style="display: none;">
+            <div class="glass-card auth-card">
+                <h2>Welcome Back</h2>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-block">Login</button>
+                    <p class="text-center">Don't have an account? <a href="#"
+                            onclick="showSection('register-section')">Register</a></p>
+                </form>
+            </div>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register-section" class="auth-section" style="display: none;">
+            <div class="glass-card auth-card">
+                <h2>Create Account</h2>
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="reg-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="reg-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="reg-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Type</label>
+                        <select id="reg-role">
+                            <option value="client">Client (Buyer)</option>
+                            <option value="artist">Artist (Seller)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="bio-group" style="display:none;">
+                        <label>Artist Bio</label>
+                        <textarea id="reg-bio" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary btn-block">Sign Up</button>
+                    <p class="text-center">Already have an account? <a href="#"
+                            onclick="showSection('login-section')">Login</a></p>
+                </form>
+            </div>
+        </section>
+
+        <!-- Artist Dashboard -->
+        <section id="dashboard-section" style="display: none;">
+            <div class="dashboard-header">
+                <h2>Artist Dashboard</h2>
+                <button onclick="showSection('add-art-section')" class="btn-primary">+ Add New Artwork</button>
+            </div>
+            <!-- Artist's Artworks List -->
+            <div id="artist-artworks" class="gallery-grid"></div>
+        </section>
+
+        <!-- Add Artwork Section -->
+        <section id="add-art-section" class="auth-section" style="display: none;">
+            <div class="glass-card auth-card">
+                <h2>Add New Artwork</h2>
+                <form onsubmit="handleAddArtwork(event)">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="art-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="art-desc" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Price ($)</label>
+                        <input type="number" id="art-price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Image</label>
+                        <input type="file" id="art-image" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-block">Upload Artwork</button>
+                    <button type="button" onclick="showSection('dashboard-section')"
+                        class="btn-secondary btn-block">Cancel</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Artwork Detail & Reviews Modal -->
+        <div id="artwork-modal" class="modal">
+            <div class="modal-content glass-card">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <div class="modal-body">
+                    <div class="art-image-container">
+                        <img id="modal-img" src="" alt="Artwork">
+                    </div>
+                    <div class="art-info">
+                        <h2 id="modal-title"></h2>
+                        <p class="artist-tag">by <span id="modal-artist"></span></p>
+                        <p id="modal-price" class="price-tag"></p>
+                        <p id="modal-status" class="status-badge"></p>
+                        <p id="modal-desc" class="desc-text"></p>
+
+                        <div id="modal-actions">
+                            <button id="buy-btn" class="btn-primary btn-lg" onclick="purchaseArtwork()">Buy Now</button>
+                        </div>
+
+                        <hr>
+
+                        <div class="reviews-section">
+                            <div class="reviews-header">
+                                <h3>Customer Reviews</h3>
+                                <div class="avg-rating">
+                                    <span class="rating-number" id="modal-rating"></span>
+                                    <span class="rating-stars">★★★★★</span>
+                                </div>
+                            </div>
+                            <div id="review-list" class="review-list"></div>
+
+                            <form id="review-form" class="review-form" onsubmit="submitReview(event)">
+                                <h4 class="form-title">Share Your Experience</h4>
+                                <div class="rating-input-wrapper">
+                                    <label class="rating-label">Your Rating</label>
+                                    <div class="star-rating" id="star-rating">
+                                        <input type="radio" name="rating" id="star5" value="5">
+                                        <label for="star5" class="star">★</label>
+                                        <input type="radio" name="rating" id="star4" value="4">
+                                        <label for="star4" class="star">★</label>
+                                        <input type="radio" name="rating" id="star3" value="3">
+                                        <label for="star3" class="star">★</label>
+                                        <input type="radio" name="rating" id="star2" value="2">
+                                        <label for="star2" class="star">★</label>
+                                        <input type="radio" name="rating" id="star1" value="1">
+                                        <label for="star1" class="star">★</label>
+                                    </div>
+                                </div>
+                                <div class="comment-wrapper">
+                                    <label class="comment-label">Your Review</label>
+                                    <textarea id="review-comment" class="review-textarea"
+                                        placeholder="Tell us what you think about this artwork..." required
+                                        rows="4"></textarea>
+                                </div>
+                                <button type="submit" class="btn-submit-review">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                                    </svg>
+                                    Submit Review
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toast" class="toast">Action Successful</div>
+
+    <script src="app.js"></script>
+    <script>
+        // Inline simple toggle for role select
+        document.getElementById('reg-role').addEventListener('change', function () {
+            document.getElementById('bio-group').style.display = (this.value === 'artist') ? 'block' : 'none';
+        });
+    </script>
+</body>
+
+</html>
