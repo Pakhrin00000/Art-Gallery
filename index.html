@@ -6,19 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Art Gallery</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.0.1">
     <link rel="stylesheet" href="review-styles.css">
 </head>
 
 <body>
 
     <!-- Background Elements -->
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
+    <div class="mesh-bg"></div>
 
     <!-- Navigation -->
     <nav class="glass-nav">
-        <div class="logo">ArtSpace</div>
+        <div class="logo">Art<span>Gallery</span></div>
         <div class="nav-links">
             <a href="#" onclick="showSection('gallery-section')">Gallery</a>
             <span id="auth-links">
@@ -55,74 +54,179 @@
                     </div>
                 </div>
             </div>
-            <div id="gallery-grid" class="gallery-grid">
-                <!-- Artworks injected here -->
-            </div>
+            <!-- Featured Art Container -->
+            <section id="featured-section" style="margin-top: 4rem;">
+                <div class="reveal">
+                    <h2
+                        style="margin-bottom: 2rem; color: #a855f7; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.8rem;">✧</span> Featured Masterpieces
+                    </h2>
+                    <div id="featured-grid" class="gallery-grid">
+                        <!-- Featured artworks injected here -->
+                    </div>
+                </div>
+
+                <div id="gallery-grid" class="gallery-grid">
+                    <!-- Artworks injected here -->
+                </div>
+            </section>
         </section>
 
         <!-- Login Section -->
         <section id="login-section" class="auth-section" style="display: none;">
-            <div class="glass-card auth-card">
-                <h2>Welcome Back</h2>
-                <form onsubmit="handleLogin(event)">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="login-email" required>
+            <div class="auth-split-card">
+                <div class="auth-form-side">
+                    <div class="auth-form-container">
+                        <h2>Welcome Back</h2>
+                        <form onsubmit="handleLogin(event)">
+                            <div class="form-group">
+                                <label>I am an...</label>
+                                <select id="login-role" onchange="updateLoginVisual()" class="modern-select">
+                                    <option value="artist">Artist</option>
+                                    <option value="client">Collector</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="login-email" required placeholder="your@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" id="login-password" required placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn-primary btn-block">Login</button>
+                            <p class="text-center" style="margin-top: 1rem;">
+                                New identity? <a href="#" onclick="showSection('register-section')">Create
+                                    Account</a>
+                            </p>
+                            <div
+                                style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                                <a href="admin/login.html"
+                                    style="font-size: 0.85rem; color: #a855f7; font-weight: 600; text-decoration: none;">
+                                    Admin Dashboard
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="login-password" required>
+                </div>
+                <div id="login-visual-side" class="auth-visual-side bg-artist">
+                    <div class="visual-content">
+                        <h2 id="login-visual-title">Login to unlock your creative potential.</h2>
+                        <p id="login-visual-text">Access your personal portfolio and showcase your work to the
+                            world.</p>
                     </div>
-                    <button type="submit" class="btn-primary btn-block">Login</button>
-                    <p class="text-center">Don't have an account? <a href="#"
-                            onclick="showSection('register-section')">Register</a></p>
-                </form>
+                </div>
             </div>
         </section>
 
         <!-- Register Section -->
         <section id="register-section" class="auth-section" style="display: none;">
-            <div class="glass-card auth-card">
-                <h2>Create Account</h2>
-                <form onsubmit="handleRegister(event)">
-                    <div class="form-group">
-                        <label>Name</label>
-                        <input type="text" id="reg-name" required>
+            <div class="auth-split-card">
+                <div class="auth-form-side">
+                    <div class="auth-form-container">
+                        <h2>Create Account</h2>
+                        <form onsubmit="handleRegister(event)">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="reg-name" required placeholder="Your name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address</label>
+                                <input type="email" id="reg-email" required placeholder="your@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Secure Password</label>
+                                <input type="password" id="reg-password" required placeholder="••••••••">
+                            </div>
+                            <div class="form-group">
+                                <label>Account Type</label>
+                                <select id="reg-role" onchange="updateRegisterVisual()" class="modern-select">
+                                    <option value="client">Collector (Buyer)</option>
+                                    <option value="artist">Artist (Seller)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="bio-group" style="display:none;">
+                                <label>Artist Biography</label>
+                                <textarea id="reg-bio" rows="3"
+                                    placeholder="A brief description of your art..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary btn-block">Sign Up</button>
+                            <p class="text-center" style="margin-top: 1rem;">
+                                Already a member? <a href="#" onclick="showSection('login-section')">Login</a>
+                            </p>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="reg-email" required>
+                </div>
+                <div id="reg-visual-side" class="auth-visual-side bg-collector">
+                    <div class="visual-content">
+                        <h2 id="reg-visual-title">Discover masterpieces that speak.</h2>
+                        <p id="reg-visual-text">Build your collection of world-class fine art from verified
+                            creators.</p>
                     </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="reg-password" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Account Type</label>
-                        <select id="reg-role">
-                            <option value="client">Client (Buyer)</option>
-                            <option value="artist">Artist (Seller)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="bio-group" style="display:none;">
-                        <label>Artist Bio</label>
-                        <textarea id="reg-bio" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn-primary btn-block">Sign Up</button>
-                    <p class="text-center">Already have an account? <a href="#"
-                            onclick="showSection('login-section')">Login</a></p>
-                </form>
+                </div>
             </div>
         </section>
 
         <!-- Artist Dashboard -->
         <section id="dashboard-section" style="display: none;">
-            <div class="dashboard-header">
-                <h2>Artist Dashboard</h2>
-                <button onclick="showSection('add-art-section')" class="btn-primary">+ Add New Artwork</button>
+            <div class="dashboard-header glass-card">
+                <div class="header-main">
+                    <h2>Artist Dashboard</h2>
+                    <p>Manage your exhibition and profile settings.</p>
+                </div>
+                <div class="header-actions">
+                    <button onclick="showSection('dashboard-profile-section')" class="btn-secondary">Profile
+                        Settings</button>
+                    <button onclick="showSection('add-art-section')" class="btn-primary">+ Add New Artwork</button>
+                </div>
             </div>
+
+            <div class="section-divider">
+                <h3>My Collection</h3>
+            </div>
+
             <!-- Artist's Artworks List -->
             <div id="artist-artworks" class="gallery-grid"></div>
+        </section>
+
+        <!-- Profile Settings Section -->
+        <section id="dashboard-profile-section" style="display: none;">
+            <div class="glass-card" style="padding: 2.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">
+                    <div>
+                        <h2>Profile Settings</h2>
+                        <p>Customize your public exhibition profile.</p>
+                    </div>
+                    <button onclick="showSection('dashboard-section')" class="btn-secondary">Back to Dashboard</button>
+                </div>
+
+                <form onsubmit="handleProfileUpdate(event)">
+                    <div class="form-row" style="display: flex; gap: 3rem; margin-top: 1.5rem; align-items: start;">
+                        <div class="form-group" style="flex: 1; text-align: center;">
+                            <label style="display: block; margin-bottom: 1rem;">Profile Image</label>
+                            <div class="profile-avatar-wrapper"
+                                style="margin: 0 auto 1.5rem; width: 160px; height: 160px;">
+                                <img id="edit-profile-preview" src="https://via.placeholder.com/150?text=Artist"
+                                    alt="Preview">
+                            </div>
+                            <input type="file" id="edit-profile-img" accept="image/*" style="width: 100%;"
+                                onchange="previewProfileImage(this)">
+                            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">Recommended:
+                                Square image</small>
+                        </div>
+                        <div class="form-group" style="flex: 2;">
+                            <label>Biography</label>
+                            <textarea id="edit-profile-bio" rows="6"
+                                placeholder="Share your artistic journey..."></textarea>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                        <button type="button" onclick="showSection('dashboard-section')"
+                            class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </section>
 
         <!-- Add Artwork Section -->
@@ -169,7 +273,8 @@
                         <p id="modal-desc" class="desc-text"></p>
 
                         <div id="modal-actions">
-                            <button id="buy-btn" class="btn-primary btn-lg" onclick="purchaseArtwork()">Buy Now</button>
+                            <button id="buy-btn" class="btn-primary btn-lg" onclick="purchaseArtwork()">Buy
+                                Now</button>
                         </div>
 
                         <hr>
@@ -221,11 +326,48 @@
             </div>
         </div>
 
+        <!-- Public Artist Profile Section -->
+        <section id="artist-profile-section" style="display: none;">
+            <div class="profile-header glass-card">
+                <div class="profile-avatar-wrapper">
+                    <img id="profile-avatar" src="assets/default-avatar.png" alt="Artist Avatar">
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name-row">
+                        <h2 id="profile-name"></h2>
+                        <span id="profile-verified" class="verified-badge" style="display: none;">Verified</span>
+                    </div>
+                    <p id="profile-bio" class="profile-bio-text"></p>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Member Since</span>
+                            <span id="profile-joined" class="stat-value"></span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Arts</span>
+                            <span id="profile-art-count" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button onclick="showSection('gallery-section')" class="btn-secondary">Back to Gallery</button>
+                </div>
+            </div>
+
+            <div class="section-divider">
+                <h3>Artist Exhibition</h3>
+            </div>
+
+            <div id="profile-gallery-grid" class="gallery-grid">
+                <!-- Artist's specific artworks will be loaded here -->
+            </div>
+        </section>
+
     </main>
 
     <div id="toast" class="toast">Action Successful</div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=1.0.2"></script>
     <script>
         // Inline simple toggle for role select
         document.getElementById('reg-role').addEventListener('change', function () {

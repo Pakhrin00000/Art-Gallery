@@ -6,8 +6,9 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role ENUM('artist', 'client') NOT NULL DEFAULT 'client',
+    role ENUM('artist', 'client', 'admin') NOT NULL DEFAULT 'client',
     bio TEXT,
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -18,8 +19,7 @@ CREATE TABLE IF NOT EXISTS artworks (
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     image_path VARCHAR(255) NOT NULL,
-    status ENUM('available', 'sold') NOT NULL DEFAULT 'available',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_featured BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (artist_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

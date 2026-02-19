@@ -45,10 +45,12 @@ try {
                 throw new Exception('Invalid file type. Only JPG, PNG, WEBP allowed.');
             }
             
-            // Limit size to 5MB
+            /* 
+            // Limit size to 5MB - Removed as per user request to allow any size
             if ($_FILES['image']['size'] > 5 * 1024 * 1024)   {
                 throw new Exception('File too large. Max 5MB.');
             }
+            */
 
             $uploadDir = '../uploads/';
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
@@ -82,10 +84,19 @@ try {
             if (!$art) throw new Exception('Artwork not found.');
             if ($art['status'] === 'sold') throw new Exception('Artwork already sold.');
 
+            // Get artist and price
+            $stmt = $pdo->prepare("SELECT artist_id, price FROM artworks WHERE id = ?");
+            $stmt->execute([$artworkId]);
+            $artworkData = $stmt->fetch();
+
             $stmt = $pdo->prepare("UPDATE artworks SET status = 'sold' WHERE id = ?");
             $stmt->execute([$artworkId]);
 
-            echo json_encode(['success' => true, 'message' => 'Purchase successful!']);
+            // Log Sale
+            $stmtSale = $pdo->prepare("INSERT INTO sales (artwork_id, buyer_id, artist_id, price) VALUES (?, ?, ?, ?)");
+            $stmtSale->execute([$artworkId, $userId, $artworkData['artist_id'], $artworkData['price']]);
+
+            echo json_encode(['success' => true, 'message' => 'Purchase successful! Record added to sales history.']);
         }
         elseif ($action === 'delete') {
             // Optional: Allow artist to delete their own work
@@ -105,10 +116,10 @@ try {
     } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if ($action === 'list') {
             $stmt = $pdo->query("
-                SELECT artworks.*, users.name as artist_name 
+                SELECT artworks.*, users.name as artist_name, users.is_verified 
                 FROM artworks 
                 JOIN users ON artworks.artist_id = users.id 
-                ORDER BY created_at DESC
+                ORDER BY artworks.created_at DESC
             ");
             $artworks = $stmt->fetchAll();
             echo json_encode(['success' => true, 'artworks' => $artworks]);
@@ -135,6 +146,23 @@ try {
             } else {
                  throw new Exception('Artwork not found.');
             }
+        }
+        elseif ($action === 'featured_list') {
+            $stmt = $pdo->query("
+                SELECT artworks.*, users.name as artist_name, users.is_verified 
+                FROM artworks 
+                JOIN users ON artworks.artist_id = users.id 
+                WHERE artworks.is_featured = TRUE 
+                ORDER BY artworks.created_at DESC
+                LIMIT 6
+            ");
+            $artworks = $stmt->fetchAll();
+            echo json_encode(['success' => true, 'artworks' => $artworks]);
+        }
+        elseif ($action === 'settings') {
+            $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+            $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            echo json_encode(['success' => true, 'settings' => $settings]);
         }
         else {
             throw new Exception('Invalid GET action.');

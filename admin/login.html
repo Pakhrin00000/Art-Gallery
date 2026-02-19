@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUD Authorization | ArtSpace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #020617;
+      /* OLED Black */
+      overflow: hidden;
+    }
+
+    .login-hud {
+      width: 400px;
+      padding: 3rem;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hud-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .hud-logo {
+      width: 60px;
+      height: 60px;
+      background: var(--primary);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      box-shadow: 0 0 30px var(--primary-glow);
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .hud-input {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .hud-input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--primary);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+      box-shadow: 0 4px 15px var(--primary-glow);
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+      box-shadow: 0 8px 25px var(--primary-glow);
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.3s;
+    }
+
+    .back-link:hover {
+      color: var(--text-main);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="toast-container"></div>
+
+  <div class="login-hud">
+    <div class="hud-header">
+      <div class="hud-logo">A</div>
+      <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Initialize <span>HUD</span></h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Command Authorization Required</p>
+    </div>
+
+    <form onsubmit="handleAdminLogin(event)">
+      <div class="input-group">
+        <label>System Email</label>
+        <input type="email" id="email" class="hud-input" required placeholder="admin@artspace.com">
+      </div>
+      <div class="input-group">
+        <label>Passkey</label>
+        <input type="password" id="password" class="hud-input" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="login-btn">Authorize Session</button>
+      <a href="../index.html" class="back-link">Exit to Public Gallery</a>
+    </form>
+  </div>
+
+  <script>
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${type === 'success' ? '✔' : '✖'}</span> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(20px)';
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('../api/auth.php?action=login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          if (data.user.role === 'admin') {
+            showToast('Authorization Granted. Initializing HUD...');
+            setTimeout(() => window.location.href = 'index.html', 1000);
+          } else {
+            showToast('Access Denied. Admin credentials required.', 'error');
+          }
+        } else {
+          showToast(data.error || 'Authorization Failed', 'error');
+        }
+      } catch (err) {
+        showToast('System Interface Error', 'error');
+      }
+    }
+  </script>
+</body>
+
+</html>
